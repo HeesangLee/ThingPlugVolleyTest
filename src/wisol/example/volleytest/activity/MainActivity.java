@@ -1,4 +1,4 @@
-package wisol.example.volleytest;
+package wisol.example.volleytest.activity;
 
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
@@ -9,6 +9,12 @@ import java.util.Map;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
+
+import wisol.example.volleytest.AppConfig;
+import wisol.example.volleytest.JsonDataThingPlugLogin;
+import wisol.example.volleytest.R;
+import wisol.example.volleytest.R.id;
+import wisol.example.volleytest.R.layout;
 
 import android.app.Activity;
 import android.os.Bundle;
