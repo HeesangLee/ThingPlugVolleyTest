@@ -1,5 +1,8 @@
 package wisol.example.volleytest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class AppConfig {
 	private static AppConfig mInstance;
 
@@ -10,11 +13,29 @@ public class AppConfig {
 
 	private final String DEF_USERID = "wisolHsLee";
 	private final String DEF_PASSWORD = "wisol1234!";
+//	private final String DEF_USERID = "AP10005666";
+//	private final String DEF_PASSWORD = "AK10000176";
 
 	private String userId = DEF_USERID;
 	private String userPassword = DEF_PASSWORD;
 
 	private JsonDataThingPlugLogin mJsonDataThingPlugLogin;
+	
+	public final Map<String, String> LOGIN_SEGMENT = new HashMap<String, String>(){
+		{
+			put("division", "user");
+			put("function","login");
+		}
+	};
+	
+	public final Map<String, String> SEARCH_MY_DEVICE_SEGMENT = new HashMap<String, String>(){
+		{
+			put("division", "searchDevice");
+			put("function","myDevice");
+			put("startIndex","1");
+			put("countPerPage","5");
+		}
+	};
 
 	public static synchronized AppConfig getInstance() {
 		if (mInstance == null) {
@@ -63,5 +84,6 @@ public class AppConfig {
 	public void setUserPassword(String pUserPassword) {
 		this.userPassword = pUserPassword;
 	}
+	
 
 }
