@@ -12,7 +12,8 @@
             android:id="@+id/debug_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/hello_world" />
+            android:text="@string/hello_world" 
+            android:onClick="onClickDebugText"/>
     </ScrollView>
 
 </RelativeLayout>

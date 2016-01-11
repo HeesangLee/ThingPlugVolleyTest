@@ -1,7 +1,6 @@
 package wisol.example.volleytest.activity;
 
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,20 +8,27 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.XML;
 
+import wisol.example.volleytest.JsonContentInstanceDetail;
+import wisol.example.volleytest.JsonDataThingPlugLogin;
+import wisol.example.volleytest.JsonResponseContentInstancesDetailed;
+import wisol.example.volleytest.R;
+import wisol.example.volleytest.ThingPlugDevice;
+import android.app.Activity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-
-import wisol.example.volleytest.R;
-import wisol.example.volleytest.ThingPlugDevice;
-import android.app.Activity;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.TextView;
-import android.widget.Toast;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class DebugActivity extends Activity {
 
@@ -36,66 +42,88 @@ public class DebugActivity extends Activity {
 		initUIcomponents();
 		mThingPlugDevice = new ThingPlugDevice();
 
-		contenInstancesRetrieve(mThingPlugDevice);
+		thingPlugRequest(mThingPlugDevice, mThingPlugDevice.getUrlContenInstancesDetailed(0, 10).toString(),
+				Request.Method.GET);
+	}
+
+	public void onClickDebugText(View v) {
+		Intent sendIntent = new Intent();
+		sendIntent.setAction(Intent.ACTION_SEND);
+		sendIntent.putExtra(Intent.EXTRA_SUBJECT, "thingPlug Debug msg");
+		sendIntent.putExtra(Intent.EXTRA_TEXT, this.mTextView.getText());
+		sendIntent.setType("text/plain");
+		this.startActivity(Intent.createChooser(sendIntent, "Sharing"));
 	}
 
 	private void initUIcomponents() {
 		mTextView = (TextView) findViewById(R.id.debug_text);
 	}
+	
+	private void testGsonObject(JSONObject pJsonObject){
+		Type type = new TypeToken<JsonResponseContentInstancesDetailed>() {
+		}.getType();
 
-	private void contenInstancesRetrieve(ThingPlugDevice pThingPlugDevice) {
-		String reqUrl = getUrl(pThingPlugDevice).toString();
-		Log.v(getClass().getName(), reqUrl);
-		final String authorization = pThingPlugDevice.getAuthorization();
-		
-		Volley.newRequestQueue(this).add(
-				new StringRequest(Request.Method.GET, reqUrl, new Response.Listener<String>() {
+		JsonResponseContentInstancesDetailed response = new GsonBuilder().create().fromJson(pJsonObject.toString(), type);
 
-					@Override
-					public void onResponse(String response) {
-						try {
-							JSONObject jsonObject = XML.toJSONObject(response);
-							mTextView.setText(jsonObject.toString(3));
-
-						} catch (JSONException e) {
-							e.printStackTrace();
-							Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
-						}
-					}
-
-				}, new Response.ErrorListener() {
-
-					@Override
-					public void onErrorResponse(VolleyError error) {
-						Toast.makeText(getApplicationContext(), "Error occured", Toast.LENGTH_SHORT).show();
-					}
-				}) {
-
-					@Override
-					public Map<String, String> getHeaders() throws AuthFailureError {
-						Map<String, String> headers = new HashMap<String, String>();
-						headers.put("Content-Type", "application/xml");
-						headers.put("Authorization", authorization);
-						headers.put("charset", "UTF-8");
-
-						return headers;
-					}
-
-				});
-		
+		mTextView.clearComposingText();
+		for(JsonContentInstanceDetail detail:response.getContentInstanceDetails()){
+			mTextView.append(
+					"\n"+
+					detail.getId()+"," +
+					detail.getCreationTime().toString()+"," +
+					detail.getLastModifiedTime().toString()+"," +
+					detail.getContent()+"," +
+					detail.getCountIndex()+"," +
+					detail.getTatalCount()+"," +
+					detail.getCurrentCount()+"\n");
+		}
 	}
 
-	private URL getUrl(ThingPlugDevice pThingPlugDevice) {
-		URL result = null;
+	private void thingPlugRequest(ThingPlugDevice pThingPlugDevice, String reqUrl, int pRequestMethod) {
+		Log.v(getClass().getName(), reqUrl);
+		final String authorization = pThingPlugDevice.getAuthorization();
+		final int reqMethod = pRequestMethod;
 
-		try {
-			result = new URL(pThingPlugDevice.getProtocol(), pThingPlugDevice.getHost(),
-					pThingPlugDevice.getHostPort(), "/ThingPlug/scls/SC10009801/attachedDevices/");
+		Volley.newRequestQueue(this).add(new StringRequest(reqMethod, reqUrl, new Response.Listener<String>() {
 
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
+			@Override
+			public void onResponse(String response) {
+				try {
+					JSONObject jsonObject = XML.toJSONObject(response);
+					mTextView.setText(jsonObject.toString(3));
+					testGsonObject(jsonObject);
 
-		return result;
+				} catch (JSONException e) {
+					e.printStackTrace();
+					Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+				}
+			}
+
+		}, new Response.ErrorListener() {
+
+			@Override
+			public void onErrorResponse(VolleyError error) {
+				Toast.makeText(getApplicationContext(), "Error occured", Toast.LENGTH_SHORT).show();
+			}
+		}) {
+
+			@Override
+			public Map<String, String> getHeaders() throws AuthFailureError {
+				Map<String, String> headers = new HashMap<String, String>();
+				headers.put("Content-Type", "application/xml");
+				headers.put("Authorization", authorization);
+				headers.put("charset", "UTF-8");
+
+				return headers;
+			}
+
+			@Override
+			public byte[] getBody() throws AuthFailureError {
+				// TODO Auto-generated method stub
+				return super.getBody();
+			}
+
+		});
+
 	}
 }

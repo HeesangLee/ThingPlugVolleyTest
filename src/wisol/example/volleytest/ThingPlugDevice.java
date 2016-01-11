@@ -1,5 +1,10 @@
 package wisol.example.volleytest;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+
 import android.util.Base64;
 import android.util.Log;
 
@@ -38,9 +43,9 @@ public class ThingPlugDevice {
 	}
 
 	public String getAuthorization() {
-		String str = Base64.encodeToString((this.mAuthId + ":" + this.mAuthKey).getBytes(),Base64.URL_SAFE);
-		Log.v(getClass().getName(),str);
-		
+		String str = Base64.encodeToString((this.mAuthId + ":" + this.mAuthKey).getBytes(), Base64.URL_SAFE);
+		Log.v(getClass().getName(), str);
+
 		return str;
 	}
 
@@ -99,7 +104,83 @@ public class ThingPlugDevice {
 	public void setHostPort(int mHostPort) {
 		this.mHostPort = mHostPort;
 	}
-	public String getProtocol(){
+
+	public String getProtocol() {
 		return this.thingProtocol;
 	}
+
+	public URL getUrlAttachedDevices() {
+		URL result = null;
+
+		try {
+
+			result = new URL(this.getProtocol(), this.getHost(), this.getHostPort(),
+					"/ThingPlug/scls/"
+							+ this.getSclId() +
+							"/attachedDevices/");
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	public URL getUrlContenInstances() {
+		URL result = null;
+
+		try {
+
+			result = new URL(this.getProtocol(), this.getHost(), this.getHostPort(),
+					"/ThingPlug/scls/"
+							+ this.getSclId() +
+							"/applications/" +
+							this.getDeviceId()
+							+ "/containers/contCollection/contentInstances/");
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	public URL getUrlContenInstancesDetailed(int pSequentialNum, int pReadCount) {
+		URL result = null;
+		Map<String, String> pBodyMap = new HashMap<String, String>();
+		pBodyMap.put("num", String.valueOf(pSequentialNum));
+		pBodyMap.put("count", String.valueOf(pReadCount));
+
+		try {
+
+			result = new URL(this.getProtocol(), this.getHost(), this.getHostPort(),
+					"/ThingPlug/scls/"
+							+ this.getSclId() +
+							"/applications/" +
+							this.getDeviceId()
+							+ "/containers/contCollection/contentInstances/detailed?" +
+							getXmlBodyString(pBodyMap)
+					);
+
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	private String getXmlElementString(String pElement, String pValue) {
+		String result;
+		result = "<" + pElement + ">" + pValue + "</" + pElement + ">";
+		return result;
+	}
+
+	private String getXmlBodyString(Map<String, String> pBodyMap) {
+		String result = "body=";
+		for (String k : pBodyMap.keySet()) {
+			result+=getXmlElementString(k,pBodyMap.get(k));
+		}
+		return result;
+	}
+
 }
