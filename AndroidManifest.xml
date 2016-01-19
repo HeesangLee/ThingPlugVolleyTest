@@ -28,6 +28,10 @@
             android:name="wisol.example.volleytest.activity.DebugActivity"
             android:label="@string/title_activity_debug" >
         </activity>
+        <activity
+            android:name="wisol.example.volleytest.activity.MenuActivity"
+            android:label="@string/title_activity_menu" >
+        </activity>
     </application>
 
     <!--

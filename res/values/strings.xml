@@ -7,5 +7,6 @@
     <string name="prompt_userid">User ID</string>
     <string name="action_log_in">Login</string>
     <string name="title_activity_debug">DebugActivity</string>
+    <string name="title_activity_menu">Menu</string>
 
 </resources>

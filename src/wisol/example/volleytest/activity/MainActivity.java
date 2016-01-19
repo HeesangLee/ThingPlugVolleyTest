@@ -98,6 +98,10 @@ public class MainActivity extends Activity {
 		Intent intent = new Intent(this,DebugActivity.class);
 		startActivity(intent);
 	}
+	private void startMenuActivity(){
+		Intent intent = new Intent(this,MenuActivity.class);
+		startActivity(intent);
+	}
 
 	private boolean login() {
 		boolean result = false;
@@ -115,7 +119,8 @@ public class MainActivity extends Activity {
 							Log.v(TAG, jsonObject.toString());
 							mTextView.setText(jsonObject.toString(3));
 							if (makeGsonObject(jsonObject) == true) {
-								startDebugActivity();
+//								startDebugActivity();
+								startMenuActivity();
 								// searchMyDevice();
 							} else {
 								retryLogin();
