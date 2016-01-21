@@ -53,8 +53,22 @@ public class MyThingPlugDevices {
 		return getDeviceInfo(pDevice).get(this.serviceNameKey);
 	}
 	
+	public String getSclId(MyDevices pDevice){
+		return getDeviceInfo(pDevice).get(this.sclIdKey);
+	}
 	
+	public String getDeviceId(MyDevices pDevice){
+		return getDeviceInfo(pDevice).get(this.deviceIdKey);
+	}
 
+	public String getAuthId(MyDevices pDevice){
+		return getDeviceInfo(pDevice).get(this.authIdKey);
+	}
+	
+	public String getAuthKey(MyDevices pDevice){
+		return getDeviceInfo(pDevice).get(this.authKeyKey);
+	}
+	
 	public Map<String, String> getDeviceInfo(MyDevices pDevice) {
 		Map<String, String> result = new HashMap<String, String>();
 		switch (pDevice) {

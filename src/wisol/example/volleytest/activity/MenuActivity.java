@@ -2,6 +2,7 @@ package wisol.example.volleytest.activity;
 
 import wisol.example.volleytest.R;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -24,7 +25,7 @@ public class MenuActivity extends Activity {
 
 	public void onClickMenuMsg(View v) {
 		mTvDebug.setText("msg");
-
+		startActivity(new Intent(this,MessageViewActivity.class));
 	}
 
 	public void onClickMenuDoor(View v) {
@@ -34,4 +35,5 @@ public class MenuActivity extends Activity {
 	public void onClickMenuMap(View v) {
 		mTvDebug.setText("map");
 	}
+	
 }
