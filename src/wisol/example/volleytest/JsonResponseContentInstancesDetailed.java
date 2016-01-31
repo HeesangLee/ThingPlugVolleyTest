@@ -11,7 +11,7 @@ public class JsonResponseContentInstancesDetailed {
 	public JsonContentInstances getContentInstances() {
 		return this.contentInstances;
 	}
-	
+
 	public JsonContentInstancesCollection getcontentInstancesCollection() {
 		return this.getContentInstances().getcontentInstancesCollection();
 	}
@@ -27,11 +27,10 @@ public class JsonResponseContentInstancesDetailed {
 	public int getCurrentNrOfInstances() {
 		return this.getContentInstances().getCurrentNrOfInstances();
 	}
-	
-	public ArrayList<JsonContentInstanceDetail> getContentInstanceDetails(){
+
+	public ArrayList<JsonContentInstanceDetail> getContentInstanceDetails() {
 		return this.getcontentInstancesCollection().getContentInstanceDetails();
 	}
-	
 
 	public class JsonContentInstances {
 		@SerializedName("contentInstancesCollection")
@@ -59,7 +58,13 @@ public class JsonResponseContentInstancesDetailed {
 		}
 
 		public int getCurrentNrOfInstances() {
-			return Integer.valueOf(this.currentNrOfInstances);
+			int result = 0;
+			try{
+				result = Integer.valueOf(this.currentNrOfInstances);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+			return result;
 		}
 
 	}
@@ -67,8 +72,8 @@ public class JsonResponseContentInstancesDetailed {
 	public class JsonContentInstancesCollection {
 		@SerializedName("contentInstance")
 		private ArrayList<JsonContentInstanceDetail> arrayContentInstanceDetails;
-		
-		public ArrayList<JsonContentInstanceDetail> getContentInstanceDetails(){
+
+		public ArrayList<JsonContentInstanceDetail> getContentInstanceDetails() {
 			return this.arrayContentInstanceDetails;
 		}
 

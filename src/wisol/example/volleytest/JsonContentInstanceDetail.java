@@ -23,6 +23,10 @@ public class JsonContentInstanceDetail {
 	@SerializedName("currentCount")
 	private String currentCount;
 
+	private Object mTag = null;
+	private boolean flagRegistered = false;
+	private String mName="";
+
 	public String getId() {
 		return this.id;
 	}
@@ -78,13 +82,37 @@ public class JsonContentInstanceDetail {
 		String[] ymd = ymdt[0].split("-");
 		String[] time = ymdt[1].split(":");
 		Date result = new Date(
-				Integer.valueOf(ymd[0]).intValue(),
-				Integer.valueOf(ymd[1]).intValue(),
+				Integer.valueOf(ymd[0]).intValue() - 1900,
+				Integer.valueOf(ymd[1]).intValue() - 1,
 				Integer.valueOf(ymd[2]).intValue(),
 				Integer.valueOf(time[0]).intValue(),
 				Integer.valueOf(time[1]).intValue(),
 				Integer.valueOf(time[2]).intValue());
 
 		return result;
+	}
+
+	public Object getTag() {
+		return mTag;
+	}
+
+	public void setTag(Object mTag) {
+		this.mTag = mTag;
+	}
+
+	public JsonContentInstanceDetail register(boolean pRegister) {
+		this.flagRegistered = pRegister;
+		return this;
+	}
+
+	public boolean isRegistered() {
+		return this.flagRegistered;
+	}
+	public JsonContentInstanceDetail setName(String pName) {
+		this.mName = pName;
+		return this;
+	}
+	public String getName(){
+		return this.mName;
 	}
 }

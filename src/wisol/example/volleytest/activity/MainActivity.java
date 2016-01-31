@@ -1,5 +1,6 @@
 package wisol.example.volleytest.activity;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -50,7 +51,16 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.layout_activity_main);
 
 		initUIcomponents();
+//		clearDisBasedCache();
+	}
 
+	private void clearDisBasedCache() {
+		File cacheDir = new File(this.getCacheDir(), "VolleyTest");
+		for (File cacheFile : cacheDir.listFiles()) {
+			if (cacheFile.isFile()) {
+				cacheFile.delete();
+			}
+		}
 	}
 
 	private void initUIcomponents() {
@@ -77,7 +87,8 @@ public class MainActivity extends Activity {
 		Type type = new TypeToken<JsonDataThingPlugLogin>() {
 		}.getType();
 
-		JsonDataThingPlugLogin loginResponse = new GsonBuilder().create().fromJson(pJsonObject.toString(), type);
+		JsonDataThingPlugLogin loginResponse = new GsonBuilder().create()
+				.fromJson(pJsonObject.toString(), type);
 
 		if (loginResponse.getResultCode() != 200) {// error
 			Toast.makeText(getApplicationContext(), loginResponse.getResultMsg(), Toast.LENGTH_SHORT).show();
@@ -94,12 +105,13 @@ public class MainActivity extends Activity {
 		mLayoutLoginForm.setVisibility(View.VISIBLE);
 	}
 
-	private void startDebugActivity(){
-		Intent intent = new Intent(this,DebugActivity.class);
+	private void startDebugActivity() {
+		Intent intent = new Intent(this, DebugActivity.class);
 		startActivity(intent);
 	}
-	private void startMenuActivity(){
-		Intent intent = new Intent(this,MenuActivity.class);
+
+	private void startMenuActivity() {
+		Intent intent = new Intent(this, MenuActivity.class);
 		startActivity(intent);
 	}
 
@@ -119,7 +131,7 @@ public class MainActivity extends Activity {
 							Log.v(TAG, jsonObject.toString());
 							mTextView.setText(jsonObject.toString(3));
 							if (makeGsonObject(jsonObject) == true) {
-//								startDebugActivity();
+								// startDebugActivity();
 								startMenuActivity();
 								// searchMyDevice();
 							} else {
@@ -164,6 +176,8 @@ public class MainActivity extends Activity {
 		String reqUrl = getUrl(appConfig.getPath(), appConfig.SEARCH_MY_DEVICE_SEGMENT).toString();
 		final String pUkey = appConfig.getLoginResponse().getUKey();
 		Log.v(Thread.currentThread().getStackTrace()[1].getMethodName(), pUkey);
+
+		// RequestQueue q=Volley.newRequestQueue(this)
 
 		Volley.newRequestQueue(this).add(
 				new StringRequest(Request.Method.GET, reqUrl, new Response.Listener<String>() {

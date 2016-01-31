@@ -19,6 +19,9 @@ public class ThingPlugDevice {
 	private String mAuthId;
 	private String mAuthKey;
 
+	private String mTag;
+	private boolean isRegistered = false;
+
 	final private String defServiceName = "ThingPlug";
 	final private String defSclId = "SC10009801";
 	final private String defDeviceId = "AD10014854";
@@ -40,6 +43,27 @@ public class ThingPlugDevice {
 		setAuthId(pAuthId);
 		setAuthKey(pAuthKey);
 
+	}
+
+	public ThingPlugDevice setTag(String pTag) {
+		this.mTag = pTag;
+		return this;
+	}
+
+	public String getTag() {
+		if (this.mTag == null) {
+			this.mTag = "";
+		}
+		return this.mTag;
+	}
+
+	public ThingPlugDevice registerDevice(boolean pRegister) {
+		this.isRegistered = pRegister;
+		return this;
+	}
+
+	public boolean isRegistered() {
+		return this.isRegistered;
 	}
 
 	public String getAuthorization() {
@@ -178,7 +202,7 @@ public class ThingPlugDevice {
 	private String getXmlBodyString(Map<String, String> pBodyMap) {
 		String result = "body=";
 		for (String k : pBodyMap.keySet()) {
-			result+=getXmlElementString(k,pBodyMap.get(k));
+			result += getXmlElementString(k, pBodyMap.get(k));
 		}
 		return result;
 	}

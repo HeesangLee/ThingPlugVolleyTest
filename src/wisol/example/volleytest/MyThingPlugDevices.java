@@ -15,28 +15,50 @@ public class MyThingPlugDevices {
 		{
 			put(serviceNameKey, "ThingPlug");
 			put(sclIdKey, "SC10009801");
-			put(deviceIdKey, "AD10014854");
+			put(deviceIdKey, "AD10014958");
 			put(authIdKey, "AP10005666");
 			put(authKeyKey, "AK10000176");
 		}
 	};
 
-	Map<String, String> deviceInfoDoor = new HashMap<String, String>() {// 종속디바이스
+	Map<String, String> deviceInfoDoor1 = new HashMap<String, String>() {// 종속디바이스
 																		// 확인해야함.
 		{
 			put(serviceNameKey, "ThingPlug");
-			put(sclIdKey, "SC10010146");
-			put(deviceIdKey, "AD10014854");
+			put(sclIdKey, "SC10010251");
+			put(deviceIdKey, "AD10014955");
 			put(authIdKey, "AP10005666");
 			put(authKeyKey, "AK10000176");
 		}
 	};
 
+	Map<String, String> deviceInfoDoor2 = new HashMap<String, String>() {// 종속디바이스
+		// 확인해야함.
+		{
+			put(serviceNameKey, "ThingPlug");
+			put(sclIdKey, "SC10010146");
+			put(deviceIdKey, "AD10014957");
+			put(authIdKey, "AP10005666");
+			put(authKeyKey, "AK10000176");
+		}
+	};
+
+	Map<String, String> deviceInfoDoor3 = new HashMap<String, String>() {// 종속디바이스
+		// 확인해야함.
+		{
+			put(serviceNameKey, "ThingPlug");
+			put(sclIdKey, "SC10010414");
+			put(deviceIdKey, "AD10014996");
+			put(authIdKey, "AP10005666");
+			put(authKeyKey, "AK10000176");
+		}
+	};
+	
 	Map<String, String> deviceInfoMap = new HashMap<String, String>() {
 		{
 			put(serviceNameKey, "ThingPlug");
 			put(sclIdKey, "SC10010147");
-			put(deviceIdKey, "AD10014854");
+			put(deviceIdKey, "AD10014956");
 			put(authIdKey, "AP10005666");
 			put(authKeyKey, "AK10000176");
 		}
@@ -52,23 +74,23 @@ public class MyThingPlugDevices {
 	public String getServiceName(MyDevices pDevice) {
 		return getDeviceInfo(pDevice).get(this.serviceNameKey);
 	}
-	
-	public String getSclId(MyDevices pDevice){
+
+	public String getSclId(MyDevices pDevice) {
 		return getDeviceInfo(pDevice).get(this.sclIdKey);
 	}
-	
-	public String getDeviceId(MyDevices pDevice){
+
+	public String getDeviceId(MyDevices pDevice) {
 		return getDeviceInfo(pDevice).get(this.deviceIdKey);
 	}
 
-	public String getAuthId(MyDevices pDevice){
+	public String getAuthId(MyDevices pDevice) {
 		return getDeviceInfo(pDevice).get(this.authIdKey);
 	}
-	
-	public String getAuthKey(MyDevices pDevice){
+
+	public String getAuthKey(MyDevices pDevice) {
 		return getDeviceInfo(pDevice).get(this.authKeyKey);
 	}
-	
+
 	public Map<String, String> getDeviceInfo(MyDevices pDevice) {
 		Map<String, String> result = new HashMap<String, String>();
 		switch (pDevice) {
@@ -78,8 +100,11 @@ public class MyThingPlugDevices {
 		case MESSAGE:
 			result.putAll(this.deviceInfoMsg);
 			break;
-		case DOOR:
-			result.putAll(this.deviceInfoDoor);
+		case DOOR1:
+			result.putAll(this.deviceInfoDoor1);
+			break;
+		case DOOR2:
+			result.putAll(this.deviceInfoDoor2);
 			break;
 		case MAP:
 			result.putAll(this.deviceInfoMap);
@@ -92,7 +117,7 @@ public class MyThingPlugDevices {
 	}
 
 	public enum MyDevices {
-		DEFAULT, MESSAGE, DOOR, MAP;
+		DEFAULT, MESSAGE, DOOR1,DOOR2,DOOR3, MAP;
 	}
 
 }

@@ -30,6 +30,7 @@ public class MenuActivity extends Activity {
 
 	public void onClickMenuDoor(View v) {
 		mTvDebug.setText("door");
+		startActivity(new Intent(this,DoorViewActivity.class));
 	}
 
 	public void onClickMenuMap(View v) {
