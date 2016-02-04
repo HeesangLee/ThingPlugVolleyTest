@@ -8,7 +8,15 @@
         android:minSdkVersion="18"
         android:targetSdkVersion="19" />
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 
     <application
         android:allowBackup="true"
@@ -37,14 +45,30 @@
             android:label="@string/title_activity_message_view" >
         </activity>
         <activity
-            android:name="wisol.example.volleytest.activity.DoorViewActivity"
+            android:name=".activity.DoorViewActivity"
             android:label="@string/title_activity_door_view" >
+        </activity>
+        <activity
+            android:name=".activity.MapActivity"
+            android:label="@string/title_activity_map" >
+        </activity>
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name="wisol.example.volleytest.activity.SelGatewayActivity"
+            android:label="@string/title_activity_sel_gateway" >
         </activity>
     </application>
 
     <!--
      To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect
-     option is required to comply with the Google+ Sign-In developer policies
+     option is required to comply with the Google+ Sign-In developer policies
     -->
 
 

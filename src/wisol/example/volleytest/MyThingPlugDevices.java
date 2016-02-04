@@ -106,6 +106,9 @@ public class MyThingPlugDevices {
 		case DOOR2:
 			result.putAll(this.deviceInfoDoor2);
 			break;
+		case DOOR3:
+			result.putAll(this.deviceInfoDoor3);
+			break;
 		case MAP:
 			result.putAll(this.deviceInfoMap);
 			break;

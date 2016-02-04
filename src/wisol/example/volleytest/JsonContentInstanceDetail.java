@@ -25,7 +25,7 @@ public class JsonContentInstanceDetail {
 
 	private Object mTag = null;
 	private boolean flagRegistered = false;
-	private String mName="";
+	private String mName = "";
 
 	public String getId() {
 		return this.id;
@@ -37,9 +37,14 @@ public class JsonContentInstanceDetail {
 
 	public Date getCreationTime() {
 		Date result = null;
-		if (this.getCreationTimeString().split("T").length > 1) {
-			result = stringToDate(this.getCreationTimeString());
+		try {
+			if (this.getCreationTimeString().split("T").length > 1) {
+				result = stringToDate(this.getCreationTimeString());
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+
 		return result;
 	}
 
@@ -61,7 +66,10 @@ public class JsonContentInstanceDetail {
 
 	public String getContent() {
 		String result = "";
-		result = new String(Base64.decode(this.content, android.util.Base64.DEFAULT));
+		if (this.content != null) {
+			result = new String(Base64.decode(this.content, android.util.Base64.DEFAULT));
+		}
+
 		return result;
 	}
 
@@ -108,11 +116,13 @@ public class JsonContentInstanceDetail {
 	public boolean isRegistered() {
 		return this.flagRegistered;
 	}
+
 	public JsonContentInstanceDetail setName(String pName) {
 		this.mName = pName;
 		return this;
 	}
-	public String getName(){
+
+	public String getName() {
 		return this.mName;
 	}
 }

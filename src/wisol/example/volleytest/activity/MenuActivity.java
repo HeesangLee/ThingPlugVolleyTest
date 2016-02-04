@@ -35,6 +35,8 @@ public class MenuActivity extends Activity {
 
 	public void onClickMenuMap(View v) {
 		mTvDebug.setText("map");
+//		startActivity(new Intent(this,MapActivity.class));
+		startActivity(new Intent(this,SelGatewayActivity.class));
 	}
 	
 }

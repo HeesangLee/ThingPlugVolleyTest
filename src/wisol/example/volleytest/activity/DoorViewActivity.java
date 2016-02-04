@@ -1,6 +1,9 @@
 package wisol.example.volleytest.activity;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -11,15 +14,19 @@ import org.json.JSONObject;
 import org.json.XML;
 
 import wisol.example.volleytest.JsonContentInstanceDetail;
+import wisol.example.volleytest.JsonResponseContentInstanceDetailedLastOne;
+import wisol.example.volleytest.JsonResponseContentInstancesDetailed;
 import wisol.example.volleytest.MyThingPlugDevices;
 import wisol.example.volleytest.MyThingPlugDevices.MyDevices;
 import wisol.example.volleytest.R;
 import wisol.example.volleytest.ThingPlugDevice;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +42,8 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class DoorViewActivity extends Activity {
 	TextView mTvDoorInfo;
@@ -44,12 +53,18 @@ public class DoorViewActivity extends Activity {
 	ArrayList<JsonContentInstanceDetail> mDoorContentList;
 	private DoorListViewAdapter mDoorListViewAdapter;
 
-	Handler mHandler;
+	Calendar mCalendar;
 
+	Handler mHandler;
+	static boolean isActivated = false;
+
+	@SuppressLint("HandlerLeak")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_door_view);
+
+		mCalendar = Calendar.getInstance();
 
 		initUiComponents();
 		initDoorListArray();
@@ -63,11 +78,94 @@ public class DoorViewActivity extends Activity {
 
 	}
 
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		isActivated = true;
+		sendInitEmptyMsg();
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		isActivated = false;
+		super.onPause();
+	}
+
+	private void sendInitEmptyMsg() {
+		int i = 0;
+		for (ThingPlugDevice pDevice : mDoorDevices) {
+			int what = mDoorDevices.indexOf(pDevice);
+			i++;
+			if (pDevice.isRegistered()) {
+				mHandler.sendEmptyMessageDelayed(what, 500 * i);
+			}
+		}
+	}
+
+	private JsonResponseContentInstanceDetailedLastOne toJsonResponse(int pDeviceNum,
+			JSONObject pJsonObject) {
+		try {
+			Log.d("json", String.valueOf(pDeviceNum) + "\n" + pJsonObject.toString(3));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Type type = new TypeToken<JsonResponseContentInstanceDetailedLastOne>() {
+		}.getType();
+
+		JsonResponseContentInstanceDetailedLastOne response = new GsonBuilder().create().fromJson(
+				pJsonObject.toString(), type);
+
+		return response;
+	}
+
+	synchronized private void updateMessageList(int pDeviceNum, JSONObject pJsonObject) {
+		JsonResponseContentInstanceDetailedLastOne response = toJsonResponse(pDeviceNum,
+				pJsonObject);
+		long delayTime = 3500;
+
+		mCalendar.setTime(new Date());
+		mTvDoorInfoDate.setText("@" + mCalendar.getTime().toString());
+
+		if (response.getCurrentNrOfInstances() == 0) {
+			delayTime = 10000 + pDeviceNum * 50;
+		} else {
+			
+			if (mDoorContentList.get(pDeviceNum).getCreationTime() != null) {
+				if (mDoorContentList.get(pDeviceNum).getCreationTime()
+						.compareTo((response.getContentInstanceDetail().getCreationTime()))<0) {
+					Log.d("compareTo", mDoorContentList.get(pDeviceNum).getCreationTime().toString() + "\n"
+							+ response.getContentInstanceDetail().getCreationTime().toString());
+					delayTime = 3000 + pDeviceNum * 50;
+				} else {
+					delayTime = 8000 + pDeviceNum * 50;
+				}
+			} else {
+				delayTime = 8000 + pDeviceNum * 50;
+			}
+			
+			mDoorContentList.set(
+					pDeviceNum,
+					response.getContentInstanceDetail()
+							.setName(mDoorContentList.get(pDeviceNum).getName())
+							.register(mDoorContentList.get(pDeviceNum).isRegistered()));
+			updateDataList();
+		}
+		mHandler.sendEmptyMessageDelayed(pDeviceNum, delayTime);
+
+	}
+
 	private synchronized void getThingPlugDeviceContent(int pDeviceNum) {
 		final String authorization = mDoorDevices.get(pDeviceNum).getAuthorization();
 		final String reqUrl = mDoorDevices.get(pDeviceNum).getUrlContenInstancesDetailed(0, 1).toString();
 		final int deviceNum = pDeviceNum;
 
+		if (isActivated == false) {
+			return;
+		}
 		Volley.newRequestQueue(this).add(
 				new StringRequest(Request.Method.GET, reqUrl, new Response.Listener<String>() {
 
@@ -75,7 +173,7 @@ public class DoorViewActivity extends Activity {
 					public void onResponse(String response) {
 						try {
 							JSONObject jsonObject = XML.toJSONObject(response);
-							// updateMessageList(jsonObject);
+							updateMessageList(deviceNum, jsonObject);
 
 						} catch (JSONException e) {
 							e.printStackTrace();
@@ -108,6 +206,7 @@ public class DoorViewActivity extends Activity {
 	private void initDoorListArray() {
 		final int UNREG_DEVICE_NUM = 10;
 		final String unRegDeviceName = "Unregistered ";
+		int regDeviceNum = 0;
 
 		mDoorDevices = new ArrayList<ThingPlugDevice>();
 		mDoorContentList = new ArrayList<JsonContentInstanceDetail>();
@@ -141,15 +240,18 @@ public class DoorViewActivity extends Activity {
 					.registerDevice(false));
 		}
 
-
 		for (ThingPlugDevice pDevice : mDoorDevices) {
 			mDoorContentList.add(new JsonContentInstanceDetail()
 					.setName(pDevice.getTag())
-					.register(false));
-//					.register(pDevice.isRegistered()));
+					.register(pDevice.isRegistered()));
+			if (pDevice.isRegistered()) {
+				regDeviceNum += 1;
+				mTvDoorInfo.setText(String.valueOf(regDeviceNum) + " places are registered@Server");
+			}
 		}
-		
+
 		updateDataList();
+
 	}
 
 	private void initUiComponents() {
@@ -212,8 +314,19 @@ public class DoorViewActivity extends Activity {
 
 					}
 					viewHolder.title.setText(item.getName());
-					viewHolder.msg.setText(item.getContent());
-					viewHolder.date.setText(item.getCreationTime().toString());
+
+					if (item.getContent().length() < 1) {
+						viewHolder.msg.setText("No data");
+					} else {
+						viewHolder.msg.setText(item.getContent());
+					}
+					if (item.getCreationTime() == null) {
+						mCalendar.setTime(new Date());
+						viewHolder.date.setText(mCalendar.getTime().toString());
+					} else {
+						viewHolder.date.setText(item.getCreationTime().toString());
+					}
+
 				}
 			} else {
 				viewHolder.img.setImageResource(R.drawable.door_unregistered);

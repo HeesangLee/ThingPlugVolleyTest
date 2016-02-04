@@ -12,7 +12,7 @@ public class AppConfig {
 	private String mPath = "ThingPlug";
 
 	private final String DEF_USERID = "wisolHsLee";
-	private final String DEF_PASSWORD = "wisol1234!";
+	private final String DEF_PASSWORD = "wisol2016!";
 //	private final String DEF_USERID = "AP10005666";
 //	private final String DEF_PASSWORD = "AK10000176";
 

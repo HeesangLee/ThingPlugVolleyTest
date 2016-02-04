@@ -1,6 +1,5 @@
 package wisol.example.volleytest.activity;
 
-import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,12 +31,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.GsonBuilder;
@@ -60,6 +56,7 @@ public class MessageViewActivity extends Activity {
 	private ArrayList<JsonContentInstanceDetail> mArrayListDetailes;
 	private int thingPlugDataPageNum = 0;
 	MyDevices THIS_DEVICE;
+	static boolean isActivated = false;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -70,29 +67,47 @@ public class MessageViewActivity extends Activity {
 		myThingPlugDevices = MyThingPlugDevices.getInstance();
 		THIS_DEVICE = MyDevices.MESSAGE;
 
+		initThingPlugRequest();
+	}
+
+	@Override
+	protected void onResume() {
+
+		super.onResume();
+		Log.d("ThingPlugReq", "Activity is started or resumed~~ ");
+		isActivated = true;
+		mMainHandler.sendEmptyMessageDelayed(getThingPlugPageNum(), 20);
+
 		mThingPlugDevice = new ThingPlugDevice(myThingPlugDevices.getServiceName(THIS_DEVICE),
 				myThingPlugDevices.getSclId(THIS_DEVICE),
 				myThingPlugDevices.getDeviceId(THIS_DEVICE),
 				myThingPlugDevices.getAuthId(THIS_DEVICE),
 				myThingPlugDevices.getAuthKey(THIS_DEVICE));
 
-		initThingPlugRequest(10);
 	}
-	
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		isActivated = false;
+		super.onPause();
+	}
 
 	@SuppressLint("HandlerLeak")
-	private void initThingPlugRequest(long postDelayed) {
-		mMainHandler = new Handler() {
-			@Override
-			public void handleMessage(Message msg) {
-				super.handleMessage(msg);
-				thingPlugRequest(mThingPlugDevice, mThingPlugDevice.getUrlContenInstancesDetailed(msg.what, 10)
-						.toString(),
-						Request.Method.GET);
-			}
+	private void initThingPlugRequest() {
+		if (mMainHandler == null) {
+			mMainHandler = new Handler() {
+				@Override
+				public void handleMessage(Message msg) {
+					super.handleMessage(msg);
+					thingPlugRequest(mThingPlugDevice,
+							mThingPlugDevice.getUrlContenInstancesDetailed(msg.what, 10)
+									.toString(),
+							Request.Method.GET);
+				}
 
-		};
-		mMainHandler.sendEmptyMessageDelayed(getThingPlugPageNum(), postDelayed);
+			};
+		}
 	}
 
 	private void initUiComponents() {
@@ -151,12 +166,15 @@ public class MessageViewActivity extends Activity {
 			Log.d("todoCheck", String.valueOf(todoCheckNext));
 
 			mMainHandler.sendEmptyMessageDelayed(setThingPlugPageNum(0), 2500);
-			
-//			if ((response.isNextData() && todoCheckNext)) {
-////				mMainHandler.sendEmptyMessageDelayed(setThingPlugPageNum(getThingPlugPageNum() + 1), 500);
-//			} else {
-//				mMainHandler.sendEmptyMessageDelayed(setThingPlugPageNum(0), 2500);
-//			}
+
+			// if ((response.isNextData() && todoCheckNext)) {
+			// //
+			// mMainHandler.sendEmptyMessageDelayed(setThingPlugPageNum(getThingPlugPageNum()
+			// + 1), 500);
+			// } else {
+			// mMainHandler.sendEmptyMessageDelayed(setThingPlugPageNum(0),
+			// 2500);
+			// }
 		}
 	}
 
@@ -205,9 +223,13 @@ public class MessageViewActivity extends Activity {
 		final String authorization = pThingPlugDevice.getAuthorization();
 		final int reqMethod = pRequestMethod;
 
+		if (isActivated == false) {
+			Log.d("ThingPlugReq", "Activity is paused~~ ");
+			return;
+		}
+
 		Volley.newRequestQueue(this).add(new StringRequest(reqMethod, reqUrl, new Response.Listener<String>() {
-			
-			
+
 			@Override
 			public void onResponse(String response) {
 				try {
