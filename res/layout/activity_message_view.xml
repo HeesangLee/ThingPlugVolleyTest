@@ -8,7 +8,7 @@
         android:id="@+id/ll_last_info"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#2c89a0"
+        android:background="#df0000"
         android:orientation="vertical" >
 
         <TextView

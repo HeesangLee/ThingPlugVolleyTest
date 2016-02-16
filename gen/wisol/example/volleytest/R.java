@@ -2479,9 +2479,15 @@ containing a value of this type.
         public static final int ic_plusone_tall_off_client=0x7f02006f;
         public static final int mark_uarat=0x7f020070;
         public static final int mark_uaratupdate=0x7f020071;
-        public static final int notification_template_icon_bg=0x7f020074;
-        public static final int powered_by_google_dark=0x7f020072;
-        public static final int powered_by_google_light=0x7f020073;
+        public static final int mk_blue=0x7f020072;
+        public static final int mk_circle=0x7f020073;
+        public static final int mk_d=0x7f020074;
+        public static final int mk_g=0x7f020075;
+        public static final int mk_m=0x7f020076;
+        public static final int mk_red=0x7f020077;
+        public static final int notification_template_icon_bg=0x7f02007a;
+        public static final int powered_by_google_dark=0x7f020078;
+        public static final int powered_by_google_light=0x7f020079;
     }
     public static final class id {
         public static final int action0=0x7f080090;
@@ -2508,6 +2514,7 @@ containing a value of this type.
         public static final int book_now=0x7f08001b;
         public static final int btn_editlocation=0x7f08007b;
         public static final int btn_gatewayhere=0x7f08007a;
+        public static final int btn_knownlocation=0x7f080080;
         public static final int btn_setgateway=0x7f08007f;
         public static final int buttonPanel=0x7f080048;
         public static final int buyButton=0x7f080017;
@@ -2529,10 +2536,10 @@ containing a value of this type.
         public static final int disableHome=0x7f08002b;
         public static final int donate_with=0x7f08001f;
         public static final int donate_with_google=0x7f080020;
-        public static final int doorItemDateText=0x7f080083;
-        public static final int doorItemStateImg=0x7f080080;
-        public static final int doorItemStateText=0x7f080082;
-        public static final int doorItemTitle=0x7f080081;
+        public static final int doorItemDateText=0x7f080084;
+        public static final int doorItemStateImg=0x7f080081;
+        public static final int doorItemStateText=0x7f080083;
+        public static final int doorItemTitle=0x7f080082;
         public static final int door_info=0x7f08006f;
         public static final int door_info_date=0x7f080070;
         public static final int door_list=0x7f080071;
@@ -2550,13 +2557,13 @@ containing a value of this type.
         public static final int home=0x7f080001;
         public static final int homeAsUp=0x7f08002c;
         public static final int hybrid=0x7f08000d;
-        public static final int ic_menu_map=0x7f08008c;
+        public static final int ic_menu_map=0x7f08008d;
         public static final int icon=0x7f080046;
         public static final int ifRoom=0x7f080038;
         public static final int image=0x7f080043;
         public static final int info=0x7f08009b;
-        public static final int iv_memu_msg=0x7f08008a;
-        public static final int iv_menu_door=0x7f08008b;
+        public static final int iv_memu_msg=0x7f08008b;
+        public static final int iv_menu_door=0x7f08008c;
         public static final int iv_selgw_mark=0x7f080078;
         public static final int layout_door_info=0x7f08006e;
         public static final int line1=0x7f080095;
@@ -2564,17 +2571,16 @@ containing a value of this type.
         public static final int listMode=0x7f080029;
         public static final int list_item=0x7f080045;
         public static final int ll_last_info=0x7f080074;
-        public static final int log_in_button=0x7f080089;
-        public static final int login_form=0x7f080086;
-        public static final int login_progress=0x7f080084;
+        public static final int log_in_button=0x7f08008a;
+        public static final int login_form=0x7f080087;
+        public static final int login_progress=0x7f080085;
         public static final int logo_only=0x7f080021;
-        public static final int main_text=0x7f080085;
+        public static final int main_text=0x7f080086;
         public static final int manual_latitude=0x7f08007d;
         public static final int manual_longitude=0x7f08007e;
         public static final int map=0x7f080073;
         public static final int match_parent=0x7f080019;
         public static final int media_actions=0x7f080093;
-        public static final int menu_debug_text=0x7f08008d;
         public static final int middle=0x7f08003d;
         public static final int monochrome=0x7f080027;
         public static final int msgListDateText=0x7f08008f;
@@ -2587,7 +2593,7 @@ containing a value of this type.
         public static final int none=0x7f08000c;
         public static final int normal=0x7f08000e;
         public static final int parentPanel=0x7f08004a;
-        public static final int password=0x7f080088;
+        public static final int password=0x7f080089;
         public static final int production=0x7f080013;
         public static final int progress_circular=0x7f080008;
         public static final int progress_horizontal=0x7f080009;
@@ -2638,7 +2644,7 @@ containing a value of this type.
         public static final int tv_selgw_location=0x7f080079;
         public static final int up=0x7f080002;
         public static final int useLogo=0x7f080030;
-        public static final int userid=0x7f080087;
+        public static final int userid=0x7f080088;
         public static final int withText=0x7f08003a;
         public static final int wrap_content=0x7f08001a;
     }

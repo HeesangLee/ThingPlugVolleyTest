@@ -62,6 +62,13 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		mLayoutLoginProgress.setVisibility(View.GONE);
+		mLayoutLoginForm.setVisibility(View.VISIBLE);
+	}
 
 	private void initUIcomponents() {
 		mLayoutLoginProgress = (LinearLayout) findViewById(R.id.login_progress);
@@ -129,7 +136,8 @@ public class MainActivity extends Activity {
 						try {
 							JSONObject jsonObject = XML.toJSONObject(response);
 							Log.v(TAG, jsonObject.toString());
-							mTextView.setText(jsonObject.toString(3));
+//							mTextView.setText(jsonObject.toString(3));
+							mTextView.setText("Doing login");
 							if (makeGsonObject(jsonObject) == true) {
 								// startDebugActivity();
 								startMenuActivity();

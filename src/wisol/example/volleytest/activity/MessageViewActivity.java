@@ -1,5 +1,6 @@
 package wisol.example.volleytest.activity;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,9 +19,11 @@ import wisol.example.volleytest.ThingPlugDevice;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,11 +39,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 
 public class MessageViewActivity extends Activity {
 
+	final String EXTRA_THIS_DEVICE = "THIS_DEVICE";
 	TextView mTvLastMsg;
 	TextView mTvLastDate;
 	ListView mLvMsgList;
@@ -65,9 +70,16 @@ public class MessageViewActivity extends Activity {
 		initUiComponents();
 
 		myThingPlugDevices = MyThingPlugDevices.getInstance();
-		THIS_DEVICE = MyDevices.MESSAGE;
-
+//		THIS_DEVICE = MyDevices.MESSAGE;
+//		THIS_DEVICE = MyDevices.MAP;
+		getExtra(savedInstanceState);
 		initThingPlugRequest();
+	}
+	
+	private void getExtra(Bundle pBundle) {
+		Log.d("",getIntent().getStringExtra(EXTRA_THIS_DEVICE));
+		THIS_DEVICE = MyDevices.valueOf(getIntent().getStringExtra(EXTRA_THIS_DEVICE));
+		
 	}
 
 	@Override
@@ -93,10 +105,9 @@ public class MessageViewActivity extends Activity {
 		super.onPause();
 	}
 
-	@SuppressLint("HandlerLeak")
 	private void initThingPlugRequest() {
 		if (mMainHandler == null) {
-			mMainHandler = new Handler() {
+			mMainHandler = new WeakHandler(this) {
 				@Override
 				public void handleMessage(Message msg) {
 					super.handleMessage(msg);
@@ -105,8 +116,15 @@ public class MessageViewActivity extends Activity {
 									.toString(),
 							Request.Method.GET);
 				}
-
 			};
+		}
+	}
+	
+	static public class WeakHandler extends Handler{
+		private final WeakReference<Activity> mHandlerObj;
+		
+		public WeakHandler(Activity pHandlerObj){
+			mHandlerObj = new WeakReference<Activity>(pHandlerObj);
 		}
 	}
 
@@ -165,7 +183,7 @@ public class MessageViewActivity extends Activity {
 
 			Log.d("todoCheck", String.valueOf(todoCheckNext));
 
-			mMainHandler.sendEmptyMessageDelayed(setThingPlugPageNum(0), 2500);
+			mMainHandler.sendEmptyMessageDelayed(setThingPlugPageNum(0), 5000);
 
 			// if ((response.isNextData() && todoCheckNext)) {
 			// //
@@ -191,6 +209,10 @@ public class MessageViewActivity extends Activity {
 			if (pNewData.get(pDataSize - (1 + i)).getCreationTime()
 					.after(this.mArrayListDetailes.get(0).getCreationTime())) {
 				mArrayListDetailes.add(0, pNewData.get(pDataSize - (i + 1)));
+				
+				if(mArrayListDetailes.size()>30){
+					mArrayListDetailes.remove(mArrayListDetailes.size()-1);
+				}
 				Toast.makeText(this, "newData", Toast.LENGTH_SHORT).show();
 			} else {
 				result = false;

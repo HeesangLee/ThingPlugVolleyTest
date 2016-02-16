@@ -1,7 +1,24 @@
 package wisol.example.volleytest.activity;
 
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.XML;
+
+import wisol.example.volleytest.JsonContentInstanceDetail;
+import wisol.example.volleytest.JsonResponseContentInstanceDetailedLastOne;
+import wisol.example.volleytest.MyThingPlugDevices;
 import wisol.example.volleytest.R;
+import wisol.example.volleytest.ThingPlugDevice;
+import wisol.example.volleytest.MyThingPlugDevices.MyDevices;
+import wisol.example.volleytest.activity.MapActivity.LoRaGpsDevice;
 import android.app.Activity;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,6 +30,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -21,9 +44,17 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 public class SelGatewayActivity extends Activity
 		implements ConnectionCallbacks, OnConnectionFailedListener, LocationListener {
+
+	final String EXTRA_LOACTION = "locationData";
+	final String EXTRA_LATITUDE = "LATITUDE";
+	final String EXTRA_LONGITUDE = "LONGITUDE";
+
 	ImageView mImageGeoMarkTop;
 	TextView mTextViewLocation;
 	Button mBtnGatewayHere;
@@ -32,6 +63,13 @@ public class SelGatewayActivity extends Activity
 	EditText mTextLatitude;
 	EditText mTextLongitude;
 	Button mBtnSetGateway;
+	Button mBtnKnownGateway;
+	LatLng mLatLngKnownGateway;
+	boolean isLoadKnownGateway = false;
+
+	ThingPlugDevice mGatewayDevice;
+	String THING_AUTHORIZATION;
+	String THING_REQ_URI;
 
 	private static final String TAG = MainActivity.class.getSimpleName();
 	private final static int PLAY_SERVICES_RESOLUTION_REQUEST = 1000;
@@ -45,7 +83,7 @@ public class SelGatewayActivity extends Activity
 	// Location updates intervals in sec
 	private static int UPDATE_INTERVAL = 20000;
 	private static int FATEST_INTERVAL = 10000;
-	private static int DISPLACEMENT = 5;
+	private static int DISPLACEMENT = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +91,13 @@ public class SelGatewayActivity extends Activity
 		setContentView(R.layout.activity_sel_gateway);
 
 		initUiComponents();
+		initDevice();
 
 		if (checkPlayServices()) {
 			buildGoogleApiClient();
 			createLocationRequest();
 		}
+		getThingPlugDeviceContentOfGateWay();
 	}
 
 	/**
@@ -99,10 +139,12 @@ public class SelGatewayActivity extends Activity
 		mTextLatitude = (EditText) findViewById(R.id.manual_latitude);
 		mTextLongitude = (EditText) findViewById(R.id.manual_longitude);
 		mBtnSetGateway = (Button) findViewById(R.id.btn_setgateway);
+		mBtnKnownGateway = (Button) findViewById(R.id.btn_knownlocation);
 
 		mLayoutManualInput.setVisibility(View.GONE);
 		mTextViewLocation.setText("HERE");
 		mBtnGatewayHere.setVisibility(View.GONE);
+		mBtnKnownGateway.setTextColor(0xff4d4d4d);
 	}
 
 	public void onClickYouAreAt(View v) {
@@ -126,7 +168,19 @@ public class SelGatewayActivity extends Activity
 	}
 
 	public void onClickGatewayHere(View v) {
+		if (mLastLocation != null) {
+			startMapActivity(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+		} else {
+			Toast.makeText(this, "Invalid location", Toast.LENGTH_SHORT).show();
+		}
 
+	}
+
+	private void startMapActivity(double pLatitude, double pLongitude) {
+		Intent intent = new Intent(this, MapActivity.class);
+		intent.putExtra(EXTRA_LATITUDE, String.valueOf(pLatitude));
+		intent.putExtra(EXTRA_LONGITUDE, String.valueOf(pLongitude));
+		startActivity(intent);
 	}
 
 	public void onClickEditLocation(View v) {
@@ -135,8 +189,21 @@ public class SelGatewayActivity extends Activity
 		mBtnEditLocation.setVisibility(View.GONE);
 	}
 
-	public void onClickSetGateway(View v) {
+	public void onClickKnownLocation(View v) {
+		if (isLoadKnownGateway) {
+			startMapActivity(mLatLngKnownGateway.latitude,mLatLngKnownGateway.longitude);
+		}else{
+			Toast.makeText(this, "No known gateway", Toast.LENGTH_SHORT).show();
+		}
+	}
 
+	public void onClickSetGateway(View v) {
+		if ((mTextLatitude.length() < 3) || (mTextLongitude.length() < 3)) {
+			Toast.makeText(this, "Check geo data", Toast.LENGTH_SHORT).show();
+		} else {
+			startMapActivity(Double.valueOf(mTextLatitude.getText().toString()),
+					Double.valueOf(mTextLongitude.getText().toString()));
+		}
 	}
 
 	protected synchronized void buildGoogleApiClient() {
@@ -144,6 +211,121 @@ public class SelGatewayActivity extends Activity
 				.addConnectionCallbacks(this)
 				.addOnConnectionFailedListener(this)
 				.addApi(LocationServices.API).build();
+	}
+
+	private void initDevice() {
+		MyThingPlugDevices myThingPlugDevices = MyThingPlugDevices.getInstance();
+
+		mGatewayDevice = new ThingPlugDevice(
+				myThingPlugDevices.getServiceName(MyDevices.GATEWAY),
+				myThingPlugDevices.getSclId(MyDevices.GATEWAY),
+				myThingPlugDevices.getDeviceId(MyDevices.GATEWAY),
+				myThingPlugDevices.getAuthId(MyDevices.GATEWAY),
+				myThingPlugDevices.getAuthKey(MyDevices.GATEWAY))
+				.setTag("RoLa Gateway")
+				.registerDevice(true);
+
+		THING_AUTHORIZATION = mGatewayDevice.getAuthorization();
+		THING_REQ_URI = mGatewayDevice.getUrlContenInstancesDetailed(0, 1).toString();
+
+	}
+
+	private JsonResponseContentInstanceDetailedLastOne toJsonResponse(JSONObject pJsonObject) {
+		try {
+			Log.d("json", pJsonObject.toString(3));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Type type = new TypeToken<JsonResponseContentInstanceDetailedLastOne>() {
+		}.getType();
+
+		JsonResponseContentInstanceDetailedLastOne response = new GsonBuilder().create().fromJson(
+				pJsonObject.toString(), type);
+
+		return response;
+	}
+
+	private boolean checkDeviceLocation(JsonContentInstanceDetail pJsonContentInstanceDetail) {
+		boolean result = false;
+		double latitude = 0, longitude = 0;
+
+		String[] geoString = pJsonContentInstanceDetail.getContent().split(",");
+		Date creationDate = pJsonContentInstanceDetail.getCreationTime();
+
+		if ((geoString.length == 3) && (creationDate != null)) {
+			result = true;
+			String doublePtnString = "^[\\+\\-]{0,1}[0-9]+[\\.\\,]{1}[0-9]+$";
+
+			try {
+				latitude = Double
+						.valueOf(geoString[1].replace(doublePtnString, ""));
+				longitude = Double
+						.valueOf(geoString[2].replace(doublePtnString, ""));
+
+				mLatLngKnownGateway = new LatLng(latitude, longitude);
+				if (mGatewayDevice != null) {
+					mGatewayDevice.setTag(geoString[0]);
+				}
+
+			} catch (Exception e) {
+				result = false;
+				e.printStackTrace();
+			}
+		}
+
+		return result;
+	}
+
+	private void updateDeviceLocation(JSONObject pJsonObject) {
+		JsonResponseContentInstanceDetailedLastOne response = toJsonResponse(pJsonObject);
+		if (checkDeviceLocation(response.getContentInstanceDetail()) == true) {
+			this.mBtnKnownGateway.setText("Gateway @" + mGatewayDevice.getTag());
+			this.mBtnKnownGateway.setTextColor(0xffffffff);
+			isLoadKnownGateway = true;
+		}
+	}
+
+	private synchronized void getThingPlugDeviceContentOfGateWay() {
+		if (mGatewayDevice == null) {
+			initDevice();
+		}
+
+		Volley.newRequestQueue(this).add(
+				new StringRequest(Request.Method.GET, THING_REQ_URI, new Response.Listener<String>() {
+
+					@Override
+					public void onResponse(String response) {
+						try {
+							JSONObject jsonObject = XML.toJSONObject(response);
+							updateDeviceLocation(jsonObject);
+						} catch (JSONException e) {
+							e.printStackTrace();
+							Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+						}
+					}
+
+				}, new Response.ErrorListener() {
+
+					@Override
+					public void onErrorResponse(VolleyError error) {
+						Toast.makeText(getApplicationContext(), ":Error occured",
+								Toast.LENGTH_SHORT).show();
+					}
+				}) {
+
+					@Override
+					public Map<String, String> getHeaders() throws AuthFailureError {
+						Map<String, String> headers = new HashMap<String, String>();
+						headers.put("Content-Type", "application/xml");
+						headers.put("Authorization", THING_AUTHORIZATION);
+						headers.put("charset", "UTF-8");
+
+						return headers;
+					}
+				});
+
 	}
 
 	/**

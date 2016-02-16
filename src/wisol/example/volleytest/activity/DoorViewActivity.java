@@ -1,5 +1,6 @@
 package wisol.example.volleytest.activity;
 
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,6 +24,7 @@ import wisol.example.volleytest.ThingPlugDevice;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -30,6 +32,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -57,8 +61,8 @@ public class DoorViewActivity extends Activity {
 
 	Handler mHandler;
 	static boolean isActivated = false;
+	final String EXTRA_THIS_DEVICE = "THIS_DEVICE";
 
-	@SuppressLint("HandlerLeak")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -69,13 +73,21 @@ public class DoorViewActivity extends Activity {
 		initUiComponents();
 		initDoorListArray();
 
-		mHandler = new Handler() {
+		mHandler = new WeakHandler(this) {
 			@Override
 			public void handleMessage(Message msg) {
 				getThingPlugDeviceContent(msg.what);
 			}
 		};
 
+	}
+
+	static public class WeakHandler extends Handler {
+		private final WeakReference<Activity> mHandlerObj;
+
+		public WeakHandler(Activity pHandlerObj) {
+			mHandlerObj = new WeakReference<Activity>(pHandlerObj);
+		}
 	}
 
 	@Override
@@ -94,12 +106,12 @@ public class DoorViewActivity extends Activity {
 	}
 
 	private void sendInitEmptyMsg() {
-		int i = 0;
+		int i = 1;
 		for (ThingPlugDevice pDevice : mDoorDevices) {
 			int what = mDoorDevices.indexOf(pDevice);
 			i++;
 			if (pDevice.isRegistered()) {
-				mHandler.sendEmptyMessageDelayed(what, 500 * i);
+				mHandler.sendEmptyMessageDelayed(what, 5 * i);
 			}
 		}
 	}
@@ -131,22 +143,22 @@ public class DoorViewActivity extends Activity {
 		mTvDoorInfoDate.setText("@" + mCalendar.getTime().toString());
 
 		if (response.getCurrentNrOfInstances() == 0) {
-			delayTime = 10000 + pDeviceNum * 50;
+			delayTime = 10000;// + pDeviceNum * 50;
 		} else {
-			
+
 			if (mDoorContentList.get(pDeviceNum).getCreationTime() != null) {
 				if (mDoorContentList.get(pDeviceNum).getCreationTime()
-						.compareTo((response.getContentInstanceDetail().getCreationTime()))<0) {
+						.compareTo((response.getContentInstanceDetail().getCreationTime())) < 0) {
 					Log.d("compareTo", mDoorContentList.get(pDeviceNum).getCreationTime().toString() + "\n"
 							+ response.getContentInstanceDetail().getCreationTime().toString());
-					delayTime = 3000 + pDeviceNum * 50;
+					delayTime = 4000;// + pDeviceNum * 50;
 				} else {
-					delayTime = 8000 + pDeviceNum * 50;
+					delayTime = 8000;// + pDeviceNum * 50;
 				}
 			} else {
-				delayTime = 8000 + pDeviceNum * 50;
+				delayTime = 8000;// + pDeviceNum * 50;
 			}
-			
+
 			mDoorContentList.set(
 					pDeviceNum,
 					response.getContentInstanceDetail()
@@ -218,27 +230,27 @@ public class DoorViewActivity extends Activity {
 				myThingPlugDevices.getSclId(MyDevices.DOOR1),
 				myThingPlugDevices.getDeviceId(MyDevices.DOOR1),
 				myThingPlugDevices.getAuthId(MyDevices.DOOR1),
-				myThingPlugDevices.getAuthKey(MyDevices.DOOR1)).setTag("Hana Bank").registerDevice(true));
+				myThingPlugDevices.getAuthKey(MyDevices.DOOR1)).setTag("LoRa door 01").registerDevice(true));
 
 		mDoorDevices.add(new ThingPlugDevice(
 				myThingPlugDevices.getServiceName(MyDevices.DOOR2),
 				myThingPlugDevices.getSclId(MyDevices.DOOR2),
 				myThingPlugDevices.getDeviceId(MyDevices.DOOR2),
 				myThingPlugDevices.getAuthId(MyDevices.DOOR2),
-				myThingPlugDevices.getAuthKey(MyDevices.DOOR2)).setTag("Home Plus").registerDevice(true));
+				myThingPlugDevices.getAuthKey(MyDevices.DOOR2)).setTag("LoRa door 02").registerDevice(true));
 
 		mDoorDevices.add(new ThingPlugDevice(
 				myThingPlugDevices.getServiceName(MyDevices.DOOR3),
 				myThingPlugDevices.getSclId(MyDevices.DOOR3),
 				myThingPlugDevices.getDeviceId(MyDevices.DOOR3),
 				myThingPlugDevices.getAuthId(MyDevices.DOOR3),
-				myThingPlugDevices.getAuthKey(MyDevices.DOOR3)).setTag("WISOL").registerDevice(true));
+				myThingPlugDevices.getAuthKey(MyDevices.DOOR3)).setTag("LoRa door 03").registerDevice(true));
 
-		for (int i = 0; i < UNREG_DEVICE_NUM; i++) {
-			mDoorDevices.add(new ThingPlugDevice()
-					.setTag(unRegDeviceName + String.valueOf(i))
-					.registerDevice(false));
-		}
+		// for (int i = 0; i < UNREG_DEVICE_NUM; i++) {
+		// mDoorDevices.add(new ThingPlugDevice()
+		// .setTag(unRegDeviceName + String.valueOf(i))
+		// .registerDevice(false));
+		// }
 
 		for (ThingPlugDevice pDevice : mDoorDevices) {
 			mDoorContentList.add(new JsonContentInstanceDetail()
@@ -258,6 +270,20 @@ public class DoorViewActivity extends Activity {
 		mTvDoorInfo = (TextView) findViewById(R.id.door_info);
 		mTvDoorInfoDate = (TextView) findViewById(R.id.door_info_date);
 		mLvDoorList = (ListView) findViewById(R.id.door_list);
+		mLvDoorList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+				startMessageActivity(position);
+			}
+
+		});
+	}
+
+	private void startMessageActivity(int position) {
+		Intent intent = new Intent(this, MessageViewActivity.class);
+		intent.putExtra(EXTRA_THIS_DEVICE, "DOOR" + String.valueOf(position + 1));
+		startActivity(intent);
 	}
 
 	private void updateDataList() {

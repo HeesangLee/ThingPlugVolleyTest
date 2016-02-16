@@ -11,18 +11,18 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/mark_uarat" 
-        android:onClick="onClickUpdateGeo"/>
+        android:onClick="onClickUpdateGeo"
+        android:src="@drawable/mark_uarat" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:onClick="onClickYouAreAt"
         android:text="YOU ARE AT"
         android:textColor="#ffffff"
         android:textSize="25dp"
-        android:textStyle="bold" 
-        android:onClick="onClickYouAreAt"/>
+        android:textStyle="bold" />
 
     <Space
         android:layout_width="match_parent"
@@ -47,18 +47,17 @@
         android:text="GATEWAY HERE"
         android:textColor="#ffffff"
         android:textStyle="bold" />
-    
-    <Button
-            android:id="@+id/btn_editlocation"
-            style="?android:textAppearanceSmall"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:onClick="onClickEditLocation"
-            android:text="EDIT LOCATION"
-            android:textColor="#ffffff"
-            android:textStyle="bold" />
 
+    <Button
+        android:id="@+id/btn_editlocation"
+        style="?android:textAppearanceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:onClick="onClickEditLocation"
+        android:text="EDIT LOCATION"
+        android:textColor="#ffffff"
+        android:textStyle="bold" />
 
     <LinearLayout
         android:id="@+id/selgateway_manual_location"
@@ -105,5 +104,16 @@
             android:textColor="#ffffff"
             android:textStyle="bold" />
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_knownlocation"
+        style="?android:textAppearanceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:onClick="onClickKnownLocation"
+        android:text="KNOWN GATEWAY"
+        android:textColor="#ffffff"
+        android:textStyle="bold" />
 
 </LinearLayout>

@@ -11,6 +11,16 @@ public class MyThingPlugDevices {
 	private final String authIdKey = "authId";
 	private final String authKeyKey = "authKey";
 
+	Map<String, String> deviceInfoGateway = new HashMap<String, String>() {
+		{
+			put(serviceNameKey, "ThingPlug");
+			put(sclIdKey, "SC10010998");
+			put(deviceIdKey, "AD10015209");
+			put(authIdKey, "AP10005666");
+			put(authKeyKey, "AK10000176");
+		}
+	};
+
 	Map<String, String> deviceInfoMsg = new HashMap<String, String>() {
 		{
 			put(serviceNameKey, "ThingPlug");
@@ -22,7 +32,7 @@ public class MyThingPlugDevices {
 	};
 
 	Map<String, String> deviceInfoDoor1 = new HashMap<String, String>() {// 종속디바이스
-																		// 확인해야함.
+																			// 확인해야함.
 		{
 			put(serviceNameKey, "ThingPlug");
 			put(sclIdKey, "SC10010251");
@@ -53,7 +63,7 @@ public class MyThingPlugDevices {
 			put(authKeyKey, "AK10000176");
 		}
 	};
-	
+
 	Map<String, String> deviceInfoMap = new HashMap<String, String>() {
 		{
 			put(serviceNameKey, "ThingPlug");
@@ -97,6 +107,9 @@ public class MyThingPlugDevices {
 		case DEFAULT:
 			result.putAll(this.deviceInfoMsg);
 			break;
+		case GATEWAY:
+			result.putAll(this.deviceInfoGateway);
+			break;
 		case MESSAGE:
 			result.putAll(this.deviceInfoMsg);
 			break;
@@ -120,7 +133,8 @@ public class MyThingPlugDevices {
 	}
 
 	public enum MyDevices {
-		DEFAULT, MESSAGE, DOOR1,DOOR2,DOOR3, MAP;
+		DEFAULT, MESSAGE, DOOR1, DOOR2, DOOR3, MAP, GATEWAY;
+
 	}
 
 }

@@ -8,17 +8,34 @@
         android:layout_width="match_parent"
         android:layout_height="40dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:text="LoRa Message"
+        android:textSize="15dp"
+        android:textStyle="bold" />
+
     <ImageView
         android:id="@+id/iv_memu_msg"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_gravity="center_horizontal"
         android:clickable="true"
-        android:src="@drawable/btn_msg"
-        android:onClick="onClickMenuMsg" />
+        android:onClick="onClickMenuMsg"
+        android:src="@drawable/btn_msg" />
+
     <Space
         android:layout_width="match_parent"
         android:layout_height="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:text="LoRa Door"
+        android:textSize="15dp"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/iv_menu_door"
@@ -26,11 +43,20 @@
         android:layout_height="100dp"
         android:layout_gravity="center_horizontal"
         android:clickable="true"
-        android:src="@drawable/btn_door" 
-        android:onClick="onClickMenuDoor"/>
+        android:onClick="onClickMenuDoor"
+        android:src="@drawable/btn_door" />
+
     <Space
         android:layout_width="match_parent"
         android:layout_height="5dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal"
+        android:text="LoRa GPS"
+        android:textSize="15dp"
+        android:textStyle="bold" />
 
     <ImageView
         android:id="@+id/ic_menu_map"
@@ -38,27 +64,17 @@
         android:layout_height="100dp"
         android:layout_gravity="center_horizontal"
         android:clickable="true"
-        android:src="@drawable/btn_map" 
-        android:onClick="onClickMenuMap"/>
+        android:onClick="onClickMenuMap"
+        android:src="@drawable/btn_map" />
+
     <Space
         android:layout_width="match_parent"
-        android:layout_height="30dp" />
-    
+        android:layout_height="40dp" />
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="www.wisol.co.kr" 
-        android:layout_gravity="bottom|center_horizontal"/>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" >
-
-        <TextView
-            android:id="@+id/menu_debug_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="-" />
-    </ScrollView>
+        android:layout_gravity="bottom|center_horizontal"
+        android:text="www.wisol.co.kr" />
 
 </LinearLayout>

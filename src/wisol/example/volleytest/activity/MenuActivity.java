@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.TextView;
 
 public class MenuActivity extends Activity {
-
+	final String EXTRA_THIS_DEVICE = "THIS_DEVICE";
 	TextView mTvDebug;
 
 	@Override
@@ -16,26 +16,21 @@ public class MenuActivity extends Activity {
 		// TODO Auto-generated method stub
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.layout_activity_menu);
-		this.initUIcomponents();
-	}
-
-	private void initUIcomponents() {
-		mTvDebug = (TextView) findViewById(R.id.menu_debug_text);
 	}
 
 	public void onClickMenuMsg(View v) {
-		mTvDebug.setText("msg");
-		startActivity(new Intent(this,MessageViewActivity.class));
+		Intent intent = new Intent(this, MessageViewActivity.class);
+		intent.putExtra(EXTRA_THIS_DEVICE, "MAP");
+		startActivity(intent);
+		
+//		startActivity(new Intent(this,MessageViewActivity.class));
 	}
 
 	public void onClickMenuDoor(View v) {
-		mTvDebug.setText("door");
 		startActivity(new Intent(this,DoorViewActivity.class));
 	}
 
 	public void onClickMenuMap(View v) {
-		mTvDebug.setText("map");
-//		startActivity(new Intent(this,MapActivity.class));
 		startActivity(new Intent(this,SelGatewayActivity.class));
 	}
 	
