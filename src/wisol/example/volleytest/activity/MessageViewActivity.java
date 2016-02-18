@@ -184,15 +184,6 @@ public class MessageViewActivity extends Activity {
 			Log.d("todoCheck", String.valueOf(todoCheckNext));
 
 			mMainHandler.sendEmptyMessageDelayed(setThingPlugPageNum(0), 5000);
-
-			// if ((response.isNextData() && todoCheckNext)) {
-			// //
-			// mMainHandler.sendEmptyMessageDelayed(setThingPlugPageNum(getThingPlugPageNum()
-			// + 1), 500);
-			// } else {
-			// mMainHandler.sendEmptyMessageDelayed(setThingPlugPageNum(0),
-			// 2500);
-			// }
 		}
 	}
 

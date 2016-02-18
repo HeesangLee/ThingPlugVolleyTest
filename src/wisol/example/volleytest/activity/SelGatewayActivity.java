@@ -215,13 +215,15 @@ public class SelGatewayActivity extends Activity
 
 	private void initDevice() {
 		MyThingPlugDevices myThingPlugDevices = MyThingPlugDevices.getInstance();
+		MyDevices THIS_DEVICE = MyDevices.GATEWAY;
+//		MyDevices THIS_DEVICE = MyDevices.MESSAGE;
 
 		mGatewayDevice = new ThingPlugDevice(
-				myThingPlugDevices.getServiceName(MyDevices.GATEWAY),
-				myThingPlugDevices.getSclId(MyDevices.GATEWAY),
-				myThingPlugDevices.getDeviceId(MyDevices.GATEWAY),
-				myThingPlugDevices.getAuthId(MyDevices.GATEWAY),
-				myThingPlugDevices.getAuthKey(MyDevices.GATEWAY))
+				myThingPlugDevices.getServiceName(THIS_DEVICE),
+				myThingPlugDevices.getSclId(THIS_DEVICE),
+				myThingPlugDevices.getDeviceId(THIS_DEVICE),
+				myThingPlugDevices.getAuthId(THIS_DEVICE),
+				myThingPlugDevices.getAuthKey(THIS_DEVICE))
 				.setTag("RoLa Gateway")
 				.registerDevice(true);
 
@@ -280,11 +282,17 @@ public class SelGatewayActivity extends Activity
 
 	private void updateDeviceLocation(JSONObject pJsonObject) {
 		JsonResponseContentInstanceDetailedLastOne response = toJsonResponse(pJsonObject);
-		if (checkDeviceLocation(response.getContentInstanceDetail()) == true) {
-			this.mBtnKnownGateway.setText("Gateway @" + mGatewayDevice.getTag());
-			this.mBtnKnownGateway.setTextColor(0xffffffff);
-			isLoadKnownGateway = true;
+		if(response.getCurrentNrOfInstances()==0){
+			this.mBtnKnownGateway.setText("Gateway Location is not found");
+			isLoadKnownGateway = false;
+		}else{
+			if (checkDeviceLocation(response.getContentInstanceDetail()) == true) {
+				this.mBtnKnownGateway.setText("Gateway @" + mGatewayDevice.getTag());
+				this.mBtnKnownGateway.setTextColor(0xffffffff);
+				isLoadKnownGateway = true;
+			}
 		}
+		
 	}
 
 	private synchronized void getThingPlugDeviceContentOfGateWay() {
