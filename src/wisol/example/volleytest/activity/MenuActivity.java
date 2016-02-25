@@ -34,4 +34,8 @@ public class MenuActivity extends Activity {
 		startActivity(new Intent(this,SelGatewayActivity.class));
 	}
 	
+	public void onButtonClickFireBaseTest(View v){
+		startActivity(new Intent(this,FirebaseTestActivity.class));
+	}
+	
 }

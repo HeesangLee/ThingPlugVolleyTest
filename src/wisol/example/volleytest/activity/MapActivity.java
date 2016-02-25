@@ -369,6 +369,8 @@ public class MapActivity extends FragmentActivity
 					public void onResponse(String response) {
 						try {
 							JSONObject jsonObject = XML.toJSONObject(response);
+							
+							
 							updateDeviceLocation(jsonObject);
 						} catch (JSONException e) {
 							e.printStackTrace();
