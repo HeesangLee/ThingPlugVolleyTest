@@ -8,6 +8,5 @@
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry exported="true" kind="lib" path="D:/00_WISOL/07_IOT/Jar/json-20140107.jar"/>
-	<classpathentry exported="true" kind="lib" path="D:/00_WISOL/07_IOT/Jar/firebase-client-android-2.5.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
