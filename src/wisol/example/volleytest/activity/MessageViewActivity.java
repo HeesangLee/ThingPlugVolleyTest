@@ -13,12 +13,14 @@ import org.json.XML;
 import wisol.example.volleytest.JsonContentInstanceDetail;
 import wisol.example.volleytest.JsonResponseContentInstancesDetailed;
 import wisol.example.volleytest.MyThingPlugDevices;
+import wisol.example.volleytest.TestService;
 import wisol.example.volleytest.MyThingPlugDevices.MyDevices;
 import wisol.example.volleytest.R;
 import wisol.example.volleytest.ThingPlugDevice;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -70,21 +72,21 @@ public class MessageViewActivity extends Activity {
 		initUiComponents();
 
 		myThingPlugDevices = MyThingPlugDevices.getInstance();
-//		THIS_DEVICE = MyDevices.MESSAGE;
-//		THIS_DEVICE = MyDevices.MAP;
+		// THIS_DEVICE = MyDevices.MESSAGE;
+		// THIS_DEVICE = MyDevices.MAP;
 		getExtra(savedInstanceState);
 		initThingPlugRequest();
 	}
-	
+
 	private void getExtra(Bundle pBundle) {
-		Log.d("",getIntent().getStringExtra(EXTRA_THIS_DEVICE));
+		Log.d("", getIntent().getStringExtra(EXTRA_THIS_DEVICE));
 		THIS_DEVICE = MyDevices.valueOf(getIntent().getStringExtra(EXTRA_THIS_DEVICE));
-		
+
 	}
 
 	@Override
 	protected void onResume() {
-
+		stopService(new Intent(this, TestService.class));
 		super.onResume();
 		Log.d("ThingPlugReq", "Activity is started or resumed~~ ");
 		isActivated = true;
@@ -101,8 +103,15 @@ public class MessageViewActivity extends Activity {
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
+		launchTestService();
 		isActivated = false;
 		super.onPause();
+	}
+
+	public void launchTestService() {
+		Intent i = new Intent(this, TestService.class);
+
+		startService(i);
 	}
 
 	private void initThingPlugRequest() {
@@ -119,11 +128,11 @@ public class MessageViewActivity extends Activity {
 			};
 		}
 	}
-	
-	static public class WeakHandler extends Handler{
+
+	static public class WeakHandler extends Handler {
 		private final WeakReference<Activity> mHandlerObj;
-		
-		public WeakHandler(Activity pHandlerObj){
+
+		public WeakHandler(Activity pHandlerObj) {
 			mHandlerObj = new WeakReference<Activity>(pHandlerObj);
 		}
 	}
@@ -200,9 +209,9 @@ public class MessageViewActivity extends Activity {
 			if (pNewData.get(pDataSize - (1 + i)).getCreationTime()
 					.after(this.mArrayListDetailes.get(0).getCreationTime())) {
 				mArrayListDetailes.add(0, pNewData.get(pDataSize - (i + 1)));
-				
-				if(mArrayListDetailes.size()>30){
-					mArrayListDetailes.remove(mArrayListDetailes.size()-1);
+
+				if (mArrayListDetailes.size() > 30) {
+					mArrayListDetailes.remove(mArrayListDetailes.size() - 1);
 				}
 				Toast.makeText(this, "newData", Toast.LENGTH_SHORT).show();
 			} else {

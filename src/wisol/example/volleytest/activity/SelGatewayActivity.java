@@ -14,6 +14,7 @@ import wisol.example.volleytest.JsonContentInstanceDetail;
 import wisol.example.volleytest.JsonResponseContentInstanceDetailedLastOne;
 import wisol.example.volleytest.MyThingPlugDevices;
 import wisol.example.volleytest.R;
+import wisol.example.volleytest.TestService;
 import wisol.example.volleytest.ThingPlugDevice;
 import wisol.example.volleytest.MyThingPlugDevices.MyDevices;
 import wisol.example.volleytest.activity.MapActivity.LoRaGpsDevice;
@@ -388,6 +389,7 @@ public class SelGatewayActivity extends Activity
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
+		stopService(new Intent(this, TestService.class));
 		super.onResume();
 
 		checkPlayServices();
@@ -410,6 +412,13 @@ public class SelGatewayActivity extends Activity
 		// TODO Auto-generated method stub
 		super.onPause();
 		stopLocationUpdates();
+		launchTestService();
+	}
+	
+	public void launchTestService() {
+		Intent i = new Intent(this, TestService.class);
+
+		startService(i);
 	}
 
 	@Override

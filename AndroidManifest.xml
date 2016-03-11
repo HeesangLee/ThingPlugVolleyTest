@@ -24,6 +24,10 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+        <service
+            android:name=".TestService"
+            android:exported="false" />
+
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name" >
@@ -73,7 +77,7 @@
 
     <!--
      To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect
-     option is required to comply with the Google+ Sign-In developer policies
+     option is required to comply with the Google+ Sign-In developer policies
     -->
 
 

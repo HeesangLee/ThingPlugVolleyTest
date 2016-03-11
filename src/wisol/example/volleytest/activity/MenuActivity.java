@@ -1,6 +1,7 @@
 package wisol.example.volleytest.activity;
 
 import wisol.example.volleytest.R;
+import wisol.example.volleytest.TestService;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,24 +19,44 @@ public class MenuActivity extends Activity {
 		setContentView(R.layout.layout_activity_menu);
 	}
 
+	@Override
+	protected void onResume() {
+		// TODO Auto-generated method stub
+		stopService(new Intent(this, TestService.class));
+		super.onResume();
+	}
+
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		launchTestService();
+		super.onPause();
+	}
+	
+	public void launchTestService() {
+		Intent i = new Intent(this, TestService.class);
+
+		startService(i);
+	}
+
 	public void onClickMenuMsg(View v) {
 		Intent intent = new Intent(this, MessageViewActivity.class);
 		intent.putExtra(EXTRA_THIS_DEVICE, "MAP");
 		startActivity(intent);
-		
-//		startActivity(new Intent(this,MessageViewActivity.class));
+
+		// startActivity(new Intent(this,MessageViewActivity.class));
 	}
 
 	public void onClickMenuDoor(View v) {
-		startActivity(new Intent(this,DoorViewActivity.class));
+		startActivity(new Intent(this, DoorViewActivity.class));
 	}
 
 	public void onClickMenuMap(View v) {
-		startActivity(new Intent(this,SelGatewayActivity.class));
+		startActivity(new Intent(this, SelGatewayActivity.class));
 	}
-	
-	public void onButtonClickFireBaseTest(View v){
-		startActivity(new Intent(this,FirebaseTestActivity.class));
+
+	public void onButtonClickFireBaseTest(View v) {
+		startActivity(new Intent(this, FirebaseTestActivity.class));
 	}
-	
+
 }

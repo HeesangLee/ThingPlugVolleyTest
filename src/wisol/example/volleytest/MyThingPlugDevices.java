@@ -1,5 +1,7 @@
 package wisol.example.volleytest;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -112,7 +114,7 @@ public class MyThingPlugDevices {
 			break;
 		case MESSAGE:
 			result.putAll(this.deviceInfoMsg);
-			break;
+			break;	
 		case DOOR1:
 			result.putAll(this.deviceInfoDoor1);
 			break;
@@ -129,6 +131,16 @@ public class MyThingPlugDevices {
 			result.putAll(this.deviceInfoMsg);
 			break;
 		}
+		return result;
+	}
+
+	public ArrayList<MyDevices> getRegisteredMyDeviceList() {
+		ArrayList<MyDevices> result = new ArrayList<MyThingPlugDevices.MyDevices>(Arrays.asList(MyDevices
+				.values()));
+		if (result.contains(MyDevices.DEFAULT)) {
+			result.remove(MyDevices.DEFAULT);
+		}
+
 		return result;
 	}
 

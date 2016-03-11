@@ -18,6 +18,7 @@ import wisol.example.volleytest.JsonContentInstanceDetail;
 import wisol.example.volleytest.JsonResponseContentInstanceDetailedLastOne;
 import wisol.example.volleytest.JsonResponseContentInstancesDetailed;
 import wisol.example.volleytest.MyThingPlugDevices;
+import wisol.example.volleytest.TestService;
 import wisol.example.volleytest.MyThingPlugDevices.MyDevices;
 import wisol.example.volleytest.R;
 import wisol.example.volleytest.ThingPlugDevice;
@@ -93,6 +94,7 @@ public class DoorViewActivity extends Activity {
 	@Override
 	protected void onResume() {
 		// TODO Auto-generated method stub
+		stopService(new Intent(this, TestService.class));
 		super.onResume();
 		isActivated = true;
 		sendInitEmptyMsg();
@@ -101,8 +103,15 @@ public class DoorViewActivity extends Activity {
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
+		launchTestService();
 		isActivated = false;
 		super.onPause();
+	}
+
+	public void launchTestService() {
+		Intent i = new Intent(this, TestService.class);
+
+		startService(i);
 	}
 
 	private void sendInitEmptyMsg() {

@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +15,7 @@ import org.json.XML;
 import wisol.example.volleytest.AppConfig;
 import wisol.example.volleytest.JsonDataThingPlugLogin;
 import wisol.example.volleytest.R;
+import wisol.example.volleytest.TestService;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -51,7 +53,20 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.layout_activity_main);
 
 		initUIcomponents();
-//		clearDisBasedCache();
+		// clearDisBasedCache();
+	}
+
+	@Override
+	protected void onPause() {
+		launchTestService();
+
+		super.onPause();
+	}
+
+	public void launchTestService() {
+		Intent i = new Intent(this, TestService.class);
+
+		startService(i);
 	}
 
 	private void clearDisBasedCache() {
@@ -62,12 +77,16 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
+
 	@Override
 	protected void onResume() {
+		stopService(new Intent(this, TestService.class));
 		// TODO Auto-generated method stub
 		super.onResume();
+
 		mLayoutLoginProgress.setVisibility(View.GONE);
 		mLayoutLoginForm.setVisibility(View.VISIBLE);
+
 	}
 
 	private void initUIcomponents() {
@@ -136,7 +155,7 @@ public class MainActivity extends Activity {
 						try {
 							JSONObject jsonObject = XML.toJSONObject(response);
 							Log.v(TAG, jsonObject.toString());
-//							mTextView.setText(jsonObject.toString(3));
+							// mTextView.setText(jsonObject.toString(3));
 							mTextView.setText("Doing login");
 							if (makeGsonObject(jsonObject) == true) {
 								// startDebugActivity();
