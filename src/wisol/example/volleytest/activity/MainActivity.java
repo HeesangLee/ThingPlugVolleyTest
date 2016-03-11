@@ -53,6 +53,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.layout_activity_main);
 
 		initUIcomponents();
+		startMenuActivity();
 		// clearDisBasedCache();
 	}
 
