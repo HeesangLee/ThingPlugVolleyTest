@@ -65,13 +65,13 @@ public class TestService extends Service {
 
 		@Override
 		public void handleMessage(Message msg) {
-			this.sendEmptyMessageDelayed(0, 1500);
-			if (isNetworkConnected()) {
+
+			if (isNetworkAvailable()) {
+				this.sendEmptyMessageDelayed(0, 3000);
 				checkNewData(mThingPlugDevices.get(checkDeviceIndex));
-				// for (ThingPlugDevice pDevice : mThingPlugDevices) {
-				// checkNewData(pDevice);
-				// }
 				checkDeviceIndex = checkDeviceIndex < mThingPlugDevices.size() - 1 ? checkDeviceIndex + 1 : 0;
+			} else {
+				this.sendEmptyMessageDelayed(0, 10000);
 			}
 		}
 	}
@@ -82,6 +82,18 @@ public class TestService extends Service {
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		final boolean isMobileConnected = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isConnected();
 		final boolean isWifiConnected = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isConnected();
+
+		result = isMobileConnected | isWifiConnected;
+
+		return result;
+	}
+
+	private boolean isNetworkAvailable() {
+		boolean result = false;
+		ConnectivityManager manager = (ConnectivityManager) getApplicationContext()
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		final boolean isMobileConnected = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).isAvailable();
+		final boolean isWifiConnected = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).isAvailable();
 
 		result = isMobileConnected | isWifiConnected;
 
@@ -106,19 +118,24 @@ public class TestService extends Service {
 	}
 
 	synchronized private void checkNewDataUpdate(JSONObject pJsonObject, String kName) {
-		JsonResponseContentInstanceDetailedLastOne response = toJsonResponse(pJsonObject);
+		try{
+			JsonResponseContentInstanceDetailedLastOne response = toJsonResponse(pJsonObject);
 
-		if (response.getCurrentNrOfInstances() != 0) {
-			Date pCreationTime = response.getContentInstanceDetail().getCreationTime();
-			if (mPreCreationDateMap.containsKey(kName)) {
-				if (pCreationTime.after(mPreCreationDateMap.get(kName))) {
-					initNotification(response.getContentInstanceDetail(), kName);
+			if (response.getCurrentNrOfInstances() != 0) {
+				Date pCreationTime = response.getContentInstanceDetail().getCreationTime();
+				if (mPreCreationDateMap.containsKey(kName)) {
+					if (pCreationTime.after(mPreCreationDateMap.get(kName))) {
+						initNotification(response.getContentInstanceDetail(), kName);
+						mPreCreationDateMap.put(kName, pCreationTime);
+					}
+				} else {
 					mPreCreationDateMap.put(kName, pCreationTime);
 				}
-			} else {
-				mPreCreationDateMap.put(kName, pCreationTime);
 			}
+		}catch(Exception e){
+			e.printStackTrace();
 		}
+		
 	}
 
 	synchronized private void checkNewData(ThingPlugDevice pThingPlugDevice) {
@@ -136,8 +153,8 @@ public class TestService extends Service {
 							checkNewDataUpdate(jsonObject, thingPlugDevice.getTag());
 						} catch (JSONException e) {
 							e.printStackTrace();
-							Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT)
-									.show();
+//							Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT)
+//									.show();
 						}
 					}
 
@@ -145,8 +162,8 @@ public class TestService extends Service {
 
 					@Override
 					public void onErrorResponse(VolleyError error) {
-						Toast.makeText(getApplicationContext(), ":Error occured",
-								Toast.LENGTH_SHORT).show();
+//						Toast.makeText(getApplicationContext(), ":Error occured",
+//								Toast.LENGTH_SHORT).show();
 					}
 				}) {
 
@@ -297,9 +314,13 @@ public class TestService extends Service {
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-
-		mServiceHandler.sendEmptyMessageDelayed(0, 10000);
-//		appAdTest();
+		if (isNetworkAvailable()) {
+			mServiceHandler.sendEmptyMessageDelayed(0, 5000);	
+		}else{
+			mServiceHandler.sendEmptyMessageDelayed(0, 20000);
+		}
+		
+		// appAdTest();
 
 		return START_STICKY;
 	}

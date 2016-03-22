@@ -254,6 +254,13 @@ public class DoorViewActivity extends Activity {
 				myThingPlugDevices.getDeviceId(MyDevices.DOOR3),
 				myThingPlugDevices.getAuthId(MyDevices.DOOR3),
 				myThingPlugDevices.getAuthKey(MyDevices.DOOR3)).setTag("LoRa door 03").registerDevice(true));
+		
+		mDoorDevices.add(new ThingPlugDevice(
+				myThingPlugDevices.getServiceName(MyDevices.GATEWAY),
+				myThingPlugDevices.getSclId(MyDevices.GATEWAY),
+				myThingPlugDevices.getDeviceId(MyDevices.GATEWAY),
+				myThingPlugDevices.getAuthId(MyDevices.GATEWAY),
+				myThingPlugDevices.getAuthKey(MyDevices.GATEWAY)).setTag("LoRa Gateway").registerDevice(true));
 
 		// for (int i = 0; i < UNREG_DEVICE_NUM; i++) {
 		// mDoorDevices.add(new ThingPlugDevice()
@@ -291,7 +298,16 @@ public class DoorViewActivity extends Activity {
 
 	private void startMessageActivity(int position) {
 		Intent intent = new Intent(this, MessageViewActivity.class);
-		intent.putExtra(EXTRA_THIS_DEVICE, "DOOR" + String.valueOf(position + 1));
+		/*
+		 * It's just test..... delete if condition after testing
+		 */
+		
+		if(position==3){
+			intent.putExtra(EXTRA_THIS_DEVICE, "GATEWAY");	
+		}else{
+			intent.putExtra(EXTRA_THIS_DEVICE, "DOOR" + String.valueOf(position + 1));
+		}
+		
 		startActivity(intent);
 	}
 
